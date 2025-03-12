@@ -2,17 +2,18 @@
 
 namespace App\Controller;
 
+use App\Repository\IngredientRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class IngredientController extends AbstractController
 {
-    #[Route('/ingredient', name: 'app_ingredient')]
-    public function index(): Response
+    #[Route('/api/ingredient/list', name: 'app_ingredient')]
+    public function index(IngredientRepository $ingredientRepository): Response
     {
-        return $this->render('ingredient/index.html.twig', [
-            'controller_name' => 'IngredientController',
-        ]);
+        $ingredients = $ingredientRepository->findAll();
+
+        return $this->json([$ingredients]);
     }
 }
