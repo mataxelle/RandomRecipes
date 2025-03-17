@@ -7,6 +7,7 @@ use App\Repository\IngredientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource()]
 #[ORM\Entity(repositoryClass: IngredientRepository::class)]
@@ -18,6 +19,7 @@ class Ingredient
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $name = null;
 
     /**
