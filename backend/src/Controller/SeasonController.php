@@ -6,14 +6,17 @@ use App\Repository\SeasonRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
+#[Route('/api/season', name: 'app_season_')]
 final class SeasonController extends AbstractController
 {
-    #[Route('/api/season/list', name: 'app_season')]
-    public function index(SeasonRepository $seasonRepository): JsonResponse
+    #[Route('/list', name: 'list', methods: ['GET'])]
+    public function getSeasonList(SeasonRepository $seasonRepository, SerializerInterface $serializerInterface): JsonResponse
     {
         $seasons = $seasonRepository->findAll();
+        $jsonSeasonList = $serializerInterface->serialize($seasons, 'json');
 
-        return $this->json([$seasons]);
+        return new JsonResponse($jsonSeasonList, 200, [], true);
     }
 }

@@ -6,14 +6,17 @@ use App\Repository\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
+#[Route('/api/category', name: 'app_category_')]
 final class CategoryController extends AbstractController
 {
-    #[Route('/api/category/list', name: 'app_category')]
-    public function index(CategoryRepository $categoryRepository): JsonResponse
+    #[Route('/list', name: 'list', methods: ['GET'])]
+    public function getCategoryList(CategoryRepository $categoryRepository, SerializerInterface $serializerInterface): JsonResponse
     {
         $categories = $categoryRepository->findAll();
+        $jsonCategoryList = $serializerInterface->serialize($categories, 'json');
 
-        return $this->json([$categories]);
+        return new JsonResponse($jsonCategoryList, 200, [], true);
     }
 }

@@ -6,14 +6,17 @@ use App\Repository\StepRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
+#[Route('/api/step', name: 'app_step_')]
 final class StepController extends AbstractController
 {
-    #[Route('/api/step/list', name: 'app_step')]
-    public function index(StepRepository $stepRepository): JsonResponse
+    #[Route('/list', name: 'list', methods: ['GET'])]
+    public function getStepList(StepRepository $stepRepository, SerializerInterface $serializerInterface): JsonResponse
     {
         $steps = $stepRepository->findAll();
+        $jsonStepList = $serializerInterface->serialize($steps, 'json');
 
-        return $this->json([$steps]);
+        return new JsonResponse($jsonStepList, 200, [], true);
     }
 }
