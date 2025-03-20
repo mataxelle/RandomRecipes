@@ -19,4 +19,17 @@ final class CategoryController extends AbstractController
 
         return new JsonResponse($jsonCategoryList, 200, [], true);
     }
+
+    #[Route('/{id}', name: 'detail', methods: ['GET'])]
+    public function getCategory(int $id, CategoryRepository $categoryRepository, SerializerInterface $serializerInterface): JsonResponse
+    {
+        $category = $categoryRepository->find($id);
+
+        if (!$category) {
+            throw $this->createNotFoundException("No result");
+        }
+
+        $jsonCategory = $serializerInterface->serialize($category, 'json');
+        return new JsonResponse($jsonCategory, 200, [], true);
+    }
 }

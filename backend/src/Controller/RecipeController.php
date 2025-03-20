@@ -19,4 +19,17 @@ final class RecipeController extends AbstractController
 
         return new JsonResponse($jsonRecipeList, 200, [], true);
     }
+
+    #[Route('/{id}', name: 'detail', methods: ['GET'])]
+    public function getRecipe(int $id, RecipeRepository $recipeRepository, SerializerInterface $serializerInterface): JsonResponse
+    {
+        $recipe = $recipeRepository->find($id);
+
+        if (!$recipe) {
+            throw $this->createNotFoundException("No result");
+        }
+
+        $jsonRecipe = $serializerInterface->serialize($recipe, 'json');
+        return new JsonResponse($jsonRecipe, 200, [], true);
+    }
 }

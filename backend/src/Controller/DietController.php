@@ -19,4 +19,17 @@ final class DietController extends AbstractController
 
         return new JsonResponse($jsonDietList, 200, [], true);
     }
+
+    #[Route('/{id}', name: 'detail', methods: ['GET'])]
+    public function getDiet(int $id, DietRepository $dietRepository, SerializerInterface $serializerInterface): JsonResponse
+    {
+        $diet = $dietRepository->find($id);
+
+        if (!$diet) {
+            throw $this->createNotFoundException("No result");
+        }
+
+        $jsonDietList = $serializerInterface->serialize($diet, 'json');
+        return new JsonResponse($jsonDietList, 200, [], true);
+    }
 }

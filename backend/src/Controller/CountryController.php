@@ -19,4 +19,17 @@ final class CountryController extends AbstractController
         
         return new JsonResponse($jsonCountryList, 200, [], true);
     }
+
+    #[Route('/{id}', name: 'detail', methods: ['GET'])]
+    public function getCountry(int $id, CountryRepository $countryRepository, SerializerInterface $serializerInterface): JsonResponse
+    {
+        $country = $countryRepository->find($id);
+
+        if (!$country) {
+            throw $this->createNotFoundException("No result");
+        }
+        
+        $jsonCountry = $serializerInterface->serialize($country, 'json');
+        return new JsonResponse($jsonCountry, 200, [], true);
+    }
 }

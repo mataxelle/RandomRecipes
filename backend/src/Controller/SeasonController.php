@@ -19,4 +19,17 @@ final class SeasonController extends AbstractController
 
         return new JsonResponse($jsonSeasonList, 200, [], true);
     }
+
+    #[Route('/{id}', name: 'detail', methods: ['GET'])]
+    public function getSeason(int $id, SeasonRepository $seasonRepository, SerializerInterface $serializerInterface): JsonResponse
+    {
+        $season = $seasonRepository->find($id);
+
+        if (!$season) {
+            throw $this->createNotFoundException("No result");
+        }
+
+        $jsonSeason = $serializerInterface->serialize($season, 'json');
+        return new JsonResponse($jsonSeason, 200, [], true);
+    }
 }

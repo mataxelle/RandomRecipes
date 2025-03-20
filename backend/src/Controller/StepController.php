@@ -19,4 +19,17 @@ final class StepController extends AbstractController
 
         return new JsonResponse($jsonStepList, 200, [], true);
     }
+
+    #[Route('/{id}', name: 'detail', methods: ['GET'])]
+    public function getStep(int $id, StepRepository $stepRepository, SerializerInterface $serializerInterface): JsonResponse
+    {
+        $step = $stepRepository->find($id);
+
+        if (!$step) {
+            throw $this->createNotFoundException("No result");
+        }
+
+        $jsonStepList = $serializerInterface->serialize($step, 'json');
+        return new JsonResponse($jsonStepList, 200, [], true);
+    }
 }
