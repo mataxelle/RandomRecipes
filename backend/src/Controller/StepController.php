@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Step;
 use App\Repository\StepRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,15 +22,8 @@ final class StepController extends AbstractController
     }
 
     #[Route('/{id}', name: 'detail', methods: ['GET'])]
-    public function getStep(int $id, StepRepository $stepRepository, SerializerInterface $serializerInterface): JsonResponse
+    public function getStep(Step $step): JsonResponse
     {
-        $step = $stepRepository->find($id);
-
-        if (!$step) {
-            throw $this->createNotFoundException("No result");
-        }
-
-        $jsonStepList = $serializerInterface->serialize($step, 'json');
-        return new JsonResponse($jsonStepList, 200, [], true);
+        return $this->json($step, 200, []);
     }
 }

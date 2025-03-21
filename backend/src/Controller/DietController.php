@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Diet;
 use App\Repository\DietRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,15 +22,8 @@ final class DietController extends AbstractController
     }
 
     #[Route('/{id}', name: 'detail', methods: ['GET'])]
-    public function getDiet(int $id, DietRepository $dietRepository, SerializerInterface $serializerInterface): JsonResponse
+    public function getDiet(Diet $diet): JsonResponse
     {
-        $diet = $dietRepository->find($id);
-
-        if (!$diet) {
-            throw $this->createNotFoundException("No result");
-        }
-
-        $jsonDietList = $serializerInterface->serialize($diet, 'json');
-        return new JsonResponse($jsonDietList, 200, [], true);
+        return $this->json($$diet, 200, []);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Season;
 use App\Repository\SeasonRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,15 +22,8 @@ final class SeasonController extends AbstractController
     }
 
     #[Route('/{id}', name: 'detail', methods: ['GET'])]
-    public function getSeason(int $id, SeasonRepository $seasonRepository, SerializerInterface $serializerInterface): JsonResponse
+    public function getSeason(Season $season): JsonResponse
     {
-        $season = $seasonRepository->find($id);
-
-        if (!$season) {
-            throw $this->createNotFoundException("No result");
-        }
-
-        $jsonSeason = $serializerInterface->serialize($season, 'json');
-        return new JsonResponse($jsonSeason, 200, [], true);
+        return $this->json($season, 200, []);
     }
 }

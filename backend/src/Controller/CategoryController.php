@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,15 +22,8 @@ final class CategoryController extends AbstractController
     }
 
     #[Route('/{id}', name: 'detail', methods: ['GET'])]
-    public function getCategory(int $id, CategoryRepository $categoryRepository, SerializerInterface $serializerInterface): JsonResponse
+    public function getCategory(Category $category): JsonResponse
     {
-        $category = $categoryRepository->find($id);
-
-        if (!$category) {
-            throw $this->createNotFoundException("No result");
-        }
-
-        $jsonCategory = $serializerInterface->serialize($category, 'json');
-        return new JsonResponse($jsonCategory, 200, [], true);
+        return $this->json($category, 200, []);
     }
 }

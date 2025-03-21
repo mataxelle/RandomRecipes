@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Country;
 use App\Repository\CountryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,15 +22,8 @@ final class CountryController extends AbstractController
     }
 
     #[Route('/{id}', name: 'detail', methods: ['GET'])]
-    public function getCountry(int $id, CountryRepository $countryRepository, SerializerInterface $serializerInterface): JsonResponse
+    public function getCountry(Country $country): JsonResponse
     {
-        $country = $countryRepository->find($id);
-
-        if (!$country) {
-            throw $this->createNotFoundException("No result");
-        }
-        
-        $jsonCountry = $serializerInterface->serialize($country, 'json');
-        return new JsonResponse($jsonCountry, 200, [], true);
+        return $this->json($country, 200, []);
     }
 }

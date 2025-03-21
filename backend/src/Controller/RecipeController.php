@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Recipe;
 use App\Repository\RecipeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,15 +22,8 @@ final class RecipeController extends AbstractController
     }
 
     #[Route('/{id}', name: 'detail', methods: ['GET'])]
-    public function getRecipe(int $id, RecipeRepository $recipeRepository, SerializerInterface $serializerInterface): JsonResponse
+    public function getRecipe(Recipe $recipe): JsonResponse
     {
-        $recipe = $recipeRepository->find($id);
-
-        if (!$recipe) {
-            throw $this->createNotFoundException("No result");
-        }
-
-        $jsonRecipe = $serializerInterface->serialize($recipe, 'json');
-        return new JsonResponse($jsonRecipe, 200, [], true);
+        return $this->json($recipe, 200, []);
     }
 }
