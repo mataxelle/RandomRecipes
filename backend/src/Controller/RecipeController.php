@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Recipe;
 use App\Repository\RecipeRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,5 +26,14 @@ final class RecipeController extends AbstractController
     public function getRecipe(Recipe $recipe): JsonResponse
     {
         return $this->json($recipe, 200, []);
+    }
+
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    public function deleteRecipe(Recipe $recipe, EntityManagerInterface $entityManagerInterface): JsonResponse
+    {
+        $entityManagerInterface->remove($recipe);
+        $entityManagerInterface->flush();
+
+        return $this->json(['message' => 'Recipe deleted'], 204);
     }
 }

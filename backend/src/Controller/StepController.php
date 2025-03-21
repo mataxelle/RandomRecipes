@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Step;
 use App\Repository\StepRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,5 +26,14 @@ final class StepController extends AbstractController
     public function getStep(Step $step): JsonResponse
     {
         return $this->json($step, 200, []);
+    }
+
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    public function deleteStep(Step $step, EntityManagerInterface $entityManagerInterface): JsonResponse
+    {
+        $entityManagerInterface->remove($step);
+        $entityManagerInterface->flush();
+        
+        return $this->json(['message' => 'Step deleted'], 204);
     }
 }

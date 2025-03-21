@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Country;
 use App\Repository\CountryRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,5 +26,14 @@ final class CountryController extends AbstractController
     public function getCountry(Country $country): JsonResponse
     {
         return $this->json($country, 200, []);
+    }
+
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    public function deleteCountry(Country $country, EntityManagerInterface $entityManagerInterface): JsonResponse
+    {
+        $entityManagerInterface->remove($country);
+        $entityManagerInterface->flush();
+
+        return $this->json(['message' => 'Country deleted'], 204);
     }
 }

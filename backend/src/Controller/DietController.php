@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Diet;
 use App\Repository\DietRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,5 +27,14 @@ final class DietController extends AbstractController
     public function getDiet(Diet $diet): JsonResponse
     {
         return $this->json($$diet, 200, []);
+    }
+
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    public function deteleDiet(Diet $diet, EntityManagerInterface $entityManagerInterface): JsonResponse
+    {
+        $entityManagerInterface->remove($diet);
+        $entityManagerInterface->flush();
+
+        return $this->json(['message' => 'Diet deleted'], 204);
     }
 }

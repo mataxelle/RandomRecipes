@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use App\Repository\CategoryRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,5 +26,14 @@ final class CategoryController extends AbstractController
     public function getCategory(Category $category): JsonResponse
     {
         return $this->json($category, 200, []);
+    }
+
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    public function deleteCategory(Category $category, EntityManagerInterface $entityManagerInterface): JsonResponse
+    {
+        $entityManagerInterface->remove($category);
+        $entityManagerInterface->flush();
+
+        return $this->json(['message' => 'Category deleted'], 204);
     }
 }

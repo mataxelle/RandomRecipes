@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Ingredient;
 use App\Repository\IngredientRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,5 +26,14 @@ final class IngredientController extends AbstractController
     public function getIngredient(Ingredient $ingredient): JsonResponse
     {
         return $this->json($ingredient, 200, []);
+    }
+
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    public function deleteIngredient(Ingredient $ingredient, EntityManagerInterface $entityManagerInterface): JsonResponse
+    {
+        $entityManagerInterface->remove($ingredient);
+        $entityManagerInterface->flush();
+
+        return $this->json(['message' => 'Ingredient deleted'], 204);
     }
 }
