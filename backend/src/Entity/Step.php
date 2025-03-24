@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\StepRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource()]
@@ -15,12 +16,15 @@ class Step
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["recipe:read"])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(["recipe:read"])]
     private ?int $number = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(["recipe:read"])]
     private ?string $content = null;
 
     #[ORM\ManyToOne(inversedBy: 'steps')]
