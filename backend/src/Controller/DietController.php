@@ -8,8 +8,10 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/diet', name: 'app_diet_')]
 final class DietController extends AbstractController
@@ -27,6 +29,27 @@ final class DietController extends AbstractController
     public function getDiet(Diet $diet): JsonResponse
     {
         return $this->json($$diet, 200, []);
+    }
+
+    #[Route('/create', name: 'create', methods: ['POST'])]
+    public function create(
+        Request $request,
+        EntityManagerInterface $entityManagerInterface,
+        SerializerInterface $serializerInterface,
+        ValidatorInterface $validatorInterface
+    ): JsonResponse
+    {
+        $diet = $serializerInterface->deserialize($request->getContent(), Diet::class, 'json');
+
+        $errors = $validatorInterface->validate($diet);
+        if ($errors->count() > 0) {
+            return $this->json($errors, 400);
+        }
+
+        $entityManagerInterface->persist($diet);
+        $entityManagerInterface->flush();
+
+        return $this->json($diet, 201, []);
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]

@@ -7,8 +7,10 @@ use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/category', name: 'app_category_')]
 final class CategoryController extends AbstractController
@@ -26,6 +28,27 @@ final class CategoryController extends AbstractController
     public function getCategory(Category $category): JsonResponse
     {
         return $this->json($category, 200, []);
+    }
+
+    #[Route('/create', name: 'create', methods: ['POST'])]
+    public function create(
+        Request $request,
+        EntityManagerInterface $entityManagerInterface,
+        SerializerInterface $serializerInterface,
+        ValidatorInterface $validatorInterface
+    ): JsonResponse
+    {
+        $category = $serializerInterface->deserialize($request->getContent(), Category::class, 'json');
+
+        $errors = $validatorInterface->validate($category);
+        if ($errors->count() > 0) {
+            return $this->json($errors, 400);
+        }
+
+        $entityManagerInterface->persist($category);
+        $entityManagerInterface->flush();
+
+        return $this->json($category, 201, []);
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
