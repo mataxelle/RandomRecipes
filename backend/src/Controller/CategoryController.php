@@ -51,6 +51,28 @@ final class CategoryController extends AbstractController
         return $this->json($category, 201, []);
     }
 
+    #[Route('/update', name: 'update', methods: ['PUT'])]
+    public function update(
+        Category $category,
+        Request $request,
+        EntityManagerInterface $entityManagerInterface,
+        SerializerInterface $serializerInterface,
+        ValidatorInterface $validatorInterface
+    ): JsonResponse
+    {
+        $serializerInterface->deserialize($request->getContent(), Category::class, 'json');
+
+        $errors = $validatorInterface->validate($category);
+        if ($errors->count() > 0) {
+            return $this->json($errors, 400);
+        }
+
+        $entityManagerInterface->persist($category);
+        $entityManagerInterface->flush();
+
+        return $this->json($category, 200, []);
+    }
+
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
     public function deleteCategory(Category $category, EntityManagerInterface $entityManagerInterface): JsonResponse
     {

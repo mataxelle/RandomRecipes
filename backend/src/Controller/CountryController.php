@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -49,6 +50,28 @@ final class CountryController extends AbstractController
         $entityManagerInterface->flush();
 
         return $this->json($country, 201, []);
+    }
+
+    #[Route('/{id}', name: 'update', methods: ['PUT'])]
+    public function update(
+        Country $country,
+        Request $request,
+        EntityManagerInterface $entityManagerInterface,
+        SerializerInterface $serializerInterface,
+        ValidatorInterface $validatorInterface
+    ): JsonResponse
+    {
+        $serializerInterface->deserialize($request->getContent(), Country::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $country]);
+
+        $errors = $validatorInterface->validate($country);
+        if ($errors->count() > 0) {
+            return $this->json($errors, 400);
+        }
+
+        $entityManagerInterface->persist($country);
+        $entityManagerInterface->flush();
+
+        return $this->json($country, 200, []);
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]

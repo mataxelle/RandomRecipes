@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -49,6 +50,28 @@ final class RecipeController extends AbstractController
         $entityManagerInterface->flush();
 
         return $this->json($recipe, 201, [], ['groups' => 'recipe:read']);
+    }
+
+    #[Route('{id}', name: 'update', methods: ['PUT'])]
+    public function update(
+        Recipe $recipe,
+        Request $request,
+        EntityManagerInterface $entityManagerInterface,
+        SerializerInterface $serializerInterface,
+        ValidatorInterface $validatorInterface
+    ): JsonResponse
+    {
+        $serializerInterface->deserialize($request->getContent(), Recipe::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $recipe]);
+
+        $errors = $validatorInterface->validate($recipe);
+        if ($errors->count() > 0) {
+            return $this->json($errors, 400);
+        }
+
+        $entityManagerInterface->persist($recipe);
+        $entityManagerInterface->flush();
+
+        return $this->json($recipe, 200, [], ['groups' => 'recipe:read']);
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]

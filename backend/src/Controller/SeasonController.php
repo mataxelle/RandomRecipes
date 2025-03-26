@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -47,8 +48,30 @@ final class SeasonController extends AbstractController
 
         $entityManagerInterface->persist($season);
         $entityManagerInterface->flush();
-;
+
         return $this->json($season, 201, []);
+    }
+
+    #[Route('/{id}', name: 'update', methods: ['PUT'])]
+    public function update(
+        Season $season,
+        Request $request,
+        EntityManagerInterface $entityManagerInterface,
+        SerializerInterface $serializerInterface,
+        ValidatorInterface $validatorInterface
+    ): JsonResponse
+    {
+        $serializerInterface->deserialize($request->getContent(), Season::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $season]);
+
+        $errors = $validatorInterface->validate($season);
+        if ($errors->count() > 0) {
+            return $this->json($errors, 400);
+        }
+
+        $entityManagerInterface->persist($season);
+        $entityManagerInterface->flush();
+;
+        return $this->json($season, 200, []);
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
