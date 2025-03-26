@@ -17,12 +17,12 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["getRecipes"])]
+    #[Groups(["recipe:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(["getRecipes"])]
+    #[Groups(["recipe:read"])]
     private ?string $name = null;
 
     /**
